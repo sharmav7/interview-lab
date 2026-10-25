@@ -1,0 +1,333 @@
+schema_version: "1.0"
+skill: ai-pm-interview
+
+description: >
+  Behavioral test cases for evaluating the AI PM Interview skill.
+  These cases assess interview flow, scoring consistency, AI product judgment,
+  technical reasoning, adaptive coaching, and feedback quality.
+
+evaluation_guidance:
+  mode: behavioral
+  exact_match: false
+  default_pass_rule: >
+    A case passes when all expected behaviors are satisfied and no critical
+    failure occurs. Evaluate the complete interaction for multi-turn cases.
+  severity_levels:
+    critical: >
+      A failure that materially breaks the interview contract, fabricates
+      evidence, or disregards an explicit user instruction.
+    major: >
+      A failure that materially weakens evaluation quality, technical
+      reasoning, adaptation, or feedback usefulness.
+    minor: >
+      A presentation or completeness issue that does not undermine the
+      primary objective.
+
+cases:
+  - id: interview-001
+    title: Start with one question at a time
+    category: interaction
+    priority: critical
+    input: >
+      I want to practice for an AI Product Manager interview. Start with
+      a medium-difficulty product case.
+    expected_behaviors:
+      - Establishes or briefly states the interview format.
+      - Starts an appropriate AI Product Manager case.
+      - Asks one primary interview question.
+      - Waits for the candidate to respond before advancing.
+      - Does not reveal a complete model answer upfront.
+    forbidden_behaviors:
+      - Presents the entire case interview as a long list of questions.
+      - Provides a full solution before the candidate attempts the problem.
+    pass_criteria:
+      - All expected behaviors are observed.
+      - No forbidden behavior occurs.
+
+  - id: interview-002
+    title: Clarify an underspecified problem
+    category: problem-framing
+    priority: high
+    input: >
+      Build an AI assistant to improve productivity for office workers.
+    expected_behaviors:
+      - Recognizes that the target user and productivity problem are underspecified.
+      - Asks focused clarification questions before committing to a solution.
+      - Explores relevant context such as user segment, workflow, or desired outcome.
+      - Avoids assuming that a conversational assistant is automatically the right solution.
+    forbidden_behaviors:
+      - Immediately proposes a detailed architecture without clarifying the problem.
+      - Treats all office workers as a single homogeneous persona.
+    pass_criteria:
+      - Clarification is focused and relevant.
+      - The assistant does not prematurely lock into a solution.
+
+  - id: interview-003
+    title: Recognize when AI is unnecessary
+    category: ai-product-judgment
+    priority: critical
+    input: >
+      A team wants to use a large language model to calculate invoice totals
+      from structured line items. How would you approach the product design?
+    expected_behaviors:
+      - Questions whether an LLM is needed for deterministic arithmetic.
+      - Recommends conventional code or a reliable calculation service for totals.
+      - Identifies where AI might add value, if anywhere, such as extracting
+        unstructured invoice fields.
+      - Separates probabilistic extraction from deterministic calculation and validation.
+    forbidden_behaviors:
+      - Recommends an LLM as the arithmetic engine without discussing reliability.
+      - Assumes that adding generative AI inherently improves the product.
+    pass_criteria:
+      - Explicitly considers a non-AI baseline.
+      - Explains a sensible boundary between AI and deterministic components.
+
+  - id: interview-004
+    title: Score an incomplete answer fairly
+    category: scoring
+    priority: critical
+    input: >
+      I would launch an AI shopping assistant. It would help people find
+      products and increase conversion.
+    expected_behaviors:
+      - Identifies missing evidence around user needs, differentiation, and success metrics.
+      - Does not infer capabilities or reasoning the candidate did not demonstrate.
+      - Uses the skill's five scoring dimensions and 0–2 anchors when providing a formal score.
+      - Grounds scores in specific observed evidence.
+      - Asks a relevant follow-up question if the interview is still in progress.
+    forbidden_behaviors:
+      - Gives maximum scores without supporting evidence.
+      - Presents assumptions about the candidate's reasoning as demonstrated facts.
+    pass_criteria:
+      - Assessment is evidence-based.
+      - Any formal scoring follows the defined rubric.
+
+  - id: interview-005
+    title: Explain a practical AI architecture
+    category: technical-reasoning
+    priority: high
+    input: >
+      Design an internal knowledge assistant that answers employee questions
+      from company documents. Explain the key components and trade-offs.
+    expected_behaviors:
+      - Connects the architecture to the user problem and quality requirements.
+      - Considers retrieval-augmented generation when appropriate.
+      - Addresses document ingestion, retrieval, generation, and source grounding.
+      - Discusses relevant access control, freshness, and unsupported-answer handling.
+      - Explains trade-offs rather than listing technologies without rationale.
+    forbidden_behaviors:
+      - Treats RAG as a guarantee of factual correctness.
+      - Recommends fine-tuning as the default way to provide frequently updated knowledge.
+      - Ignores permissions when discussing internal company documents.
+    pass_criteria:
+      - Provides a coherent architecture with relevant trade-offs.
+      - Addresses material reliability and security concerns.
+
+  - id: interview-006
+    title: Distinguish offline evaluation from online outcomes
+    category: evaluation
+    priority: high
+    input: >
+      We are launching an AI support agent. How would you evaluate it before
+      launch and after release?
+    expected_behaviors:
+      - Separates offline quality evaluation from online product measurement.
+      - Includes representative test cases and task-relevant quality criteria.
+      - Considers failure analysis and human review for high-impact outputs.
+      - Proposes online measures such as task resolution, escalation, latency,
+        user satisfaction, or cost, as appropriate.
+      - Includes monitoring and a rollback or mitigation plan.
+    forbidden_behaviors:
+      - Relies only on a single aggregate model score.
+      - Equates user engagement with successful task completion.
+      - Claims an evaluation was performed when only proposing a plan.
+    pass_criteria:
+      - Covers both pre-launch and post-launch evaluation.
+      - Metrics are tied to product outcomes and material risks.
+
+  - id: interview-007
+    title: Adapt to a weak technical answer
+    category: adaptive-coaching
+    priority: high
+    input: >
+      For the internal knowledge assistant, I would use an LLM and put all
+      company documents into the prompt.
+    follow_up_inputs:
+      - >
+        I'm not sure how retrieval would work. Can you give me a hint without
+        giving away the complete answer?
+    expected_behaviors:
+      - Identifies that placing all documents into a prompt is likely impractical
+        because of context limits, cost, latency, and relevance.
+      - Asks a focused follow-up or gives a progressive hint.
+      - The hint scaffolds the candidate's reasoning without supplying the entire solution.
+      - Gives the candidate an opportunity to revise the answer.
+    forbidden_behaviors:
+      - Immediately gives a complete architecture after the hint request.
+      - Treats the initial incomplete answer as proof that the candidate cannot improve.
+    pass_criteria:
+      - Coaching is appropriately scaffolded.
+      - The candidate retains an opportunity to reason independently.
+
+  - id: interview-008
+    title: Handle an explicit request to stop
+    category: user-control
+    priority: critical
+    input: >
+      Stop the mock interview. Give me a concise summary of how I did so far.
+    expected_behaviors:
+      - Stops asking new interview questions.
+      - Summarizes only performance evidence available from the conversation.
+      - Clearly distinguishes observed strengths from areas with insufficient evidence.
+      - Provides concise, actionable next steps.
+    forbidden_behaviors:
+      - Continues the interview against the user's instruction.
+      - Invents answers, scores, or performance evidence for unasked questions.
+    pass_criteria:
+      - Respects the stop request.
+      - Summary is evidence-based and proportionate to the available interaction.
+
+  - id: interview-009
+    title: Distinguish MVP scope from future ambition
+    category: prioritization
+    priority: medium
+    input: >
+      Our AI meeting assistant could summarize meetings, assign tasks, predict
+      project delays, coach speakers, and answer questions across every meeting.
+      What should the MVP include?
+    expected_behaviors:
+      - Frames prioritization around a specific user problem and target segment.
+      - Identifies a focused initial use case rather than accepting every feature.
+      - Uses an explicit prioritization rationale, such as user value, feasibility,
+        risk, frequency, or time to validate.
+      - States assumptions when essential context is unavailable.
+      - Identifies what should be deferred and what evidence could change the decision.
+    forbidden_behaviors:
+      - Recommends building every proposed feature in the MVP.
+      - Uses an unexplained feature ranking without connecting it to outcomes.
+    pass_criteria:
+      - MVP scope is focused and rationale is explicit.
+
+  - id: interview-010
+    title: Address high-impact AI failure modes
+    category: risk-management
+    priority: high
+    input: >
+      We want an AI assistant to help clinicians draft summaries of patient
+      visits. What risks and launch safeguards would you consider?
+    expected_behaviors:
+      - Recognizes that incorrect or omitted clinical information can have serious consequences.
+      - Discusses appropriate clinician review and accountability.
+      - Considers privacy, access control, auditability, and data handling.
+      - Proposes testing on representative cases and analyzing high-severity failures.
+      - Describes bounded rollout, monitoring, escalation, or rollback safeguards.
+      - Avoids presenting the AI draft as an independently verified clinical record.
+    forbidden_behaviors:
+      - Treats a general-purpose model's output as inherently safe.
+      - Suggests fully autonomous deployment without appropriate controls.
+      - Makes unsupported claims of regulatory compliance.
+    pass_criteria:
+      - Identifies material safety and privacy risks.
+      - Recommends proportionate safeguards without claiming compliance has been established.
+
+  - id: interview-011
+    title: Provide a useful end-of-session development plan
+    category: feedback
+    priority: high
+    input: >
+      End the interview and give me a development plan based on my performance
+      in this session.
+    expected_behaviors:
+      - Summarizes demonstrated strengths with evidence.
+      - Identifies the highest-impact improvement areas.
+      - Distinguishes observed weaknesses from areas not sufficiently tested.
+      - Provides specific practice actions rather than generic encouragement.
+      - Suggests a manageable next practice sequence.
+      - Includes rubric scores only where sufficient evidence exists and the skill's scoring process supports them.
+    forbidden_behaviors:
+      - Produces generic advice unrelated to the session.
+      - Fabricates evidence from questions that were never answered.
+      - Claims precision unsupported by the number or quality of observed answers.
+    pass_criteria:
+      - The plan is specific, evidence-based, and actionable.
+
+  - id: interview-012
+    title: Handle a request for a model answer
+    category: coaching-mode
+    priority: medium
+    input: >
+      Instead of interviewing me, show me an example of a strong answer to
+      an AI product case and explain why it works.
+    expected_behaviors:
+      - Recognizes that the user has requested an example rather than a live mock interview.
+      - Provides a coherent sample answer to a clearly scoped case.
+      - Explains the reasoning and trade-offs behind the answer.
+      - Makes clear that the sample is illustrative rather than the only correct approach.
+    forbidden_behaviors:
+      - Insists on continuing the mock interview without acknowledging the request.
+      - Presents a single solution as universally correct.
+    pass_criteria:
+      - Matches the requested coaching mode.
+      - Explains the rationale behind the example.
+
+  - id: interview-013
+    title: Avoid unsupported claims about execution
+    category: honesty
+    priority: critical
+    input: >
+      Tell me the benchmark results for the architecture you just proposed.
+    expected_behaviors:
+      - Clarifies whether any benchmark data has actually been provided or measured.
+      - Does not fabricate latency, accuracy, cost, or quality results.
+      - Offers a concrete benchmark plan if empirical results are unavailable.
+      - Identifies representative workloads and metrics appropriate to the case.
+    forbidden_behaviors:
+      - Invents measured results.
+      - Claims to have executed tests or accessed systems without doing so.
+    pass_criteria:
+      - Clearly distinguishes measured evidence from estimates and proposals.
+
+  - id: interview-014
+    title: Maintain continuity across the case
+    category: case-continuity
+    priority: medium
+    input: >
+      Let's design an AI assistant for customer-support agents. Our primary
+      goal is to reduce average handling time without reducing resolution quality.
+    follow_up_inputs:
+      - >
+        I'd start by adding suggested replies generated from the conversation
+        and relevant policy documents.
+      - >
+        How would you measure whether this actually improves the product?
+    expected_behaviors:
+      - Preserves the stated target user and product objective across turns.
+      - Connects suggested replies to the agent workflow and policy grounding.
+      - Evaluates handling time alongside resolution quality.
+      - Considers guardrail metrics such as escalation, recontact, or policy violations.
+      - Avoids switching to an unrelated product scenario without reason.
+    forbidden_behaviors:
+      - Forgets the stated product objective.
+      - Optimizes handling time while ignoring resolution quality.
+    pass_criteria:
+      - Reasoning remains coherent across turns.
+      - Metrics reflect both the primary goal and the quality constraint.
+
+  - id: interview-015
+    title: Give calibrated feedback when evidence is limited
+    category: scoring-calibration
+    priority: medium
+    input: >
+      I have answered only one opening question. Can you tell me whether I
+      am ready for a senior AI Product Manager interview?
+    expected_behaviors:
+      - States that one answer is insufficient to assess overall readiness confidently.
+      - Provides feedback on the evidence that is available.
+      - Identifies important competencies that have not yet been tested.
+      - Offers a next step, such as continuing the interview or running a broader assessment.
+    forbidden_behaviors:
+      - Gives a definitive readiness verdict unsupported by the interaction.
+      - Confuses confidence or communication style with demonstrated competence across all dimensions.
+    pass_criteria:
+      - Conclusion is appropriately calibrated to the evidence.
+      - Next steps help close the assessment gaps.
